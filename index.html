@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TMS Staff Directory &amp; Organization Chart</title>
+  <meta name="description" content="TMS Staff Organization Chart and Directory — The Minerals, Metals &amp; Materials Society" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ── Header ────────────────────────────────────────── -->
+  <header class="site-header" role="banner">
+    <div class="header-brand">
+      <span class="tms-logo">TMS</span>
+      <div>
+        <div style="font-weight:700;font-size:0.92rem;letter-spacing:0.01em;">Staff Organization Chart</div>
+        <div class="tms-label">The Minerals, Metals &amp; Materials Society</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="header-meta" id="meta-date"></span>
+      <button class="btn btn-primary" id="btn-export-pdf" title="Export to 11×8.5 inch PDF">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Toolbar ───────────────────────────────────────── -->
+  <div class="toolbar" role="toolbar" aria-label="Chart controls">
+    <!-- Search -->
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="staff-search" placeholder="Search by name, title, email, ext…" aria-label="Search staff" />
+    </div>
+
+    <!-- View toggle -->
+    <div class="view-toggles" role="group" aria-label="View mode">
+      <button class="view-btn active" id="btn-org-view" title="Organization Chart view">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><rect x="9" y="2" width="6" height="4"/><rect x="2" y="18" width="6" height="4"/><rect x="16" y="18" width="6" height="4"/><line x1="12" y1="6" x2="12" y2="14"/><polyline points="5,14 12,14 19,14"/><line x1="5" y1="14" x2="5" y2="18"/><line x1="19" y1="14" x2="19" y2="18"/></svg>
+        Org Chart
+      </button>
+      <button class="view-btn" id="btn-dir-view" title="Directory card view">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Directory
+      </button>
+    </div>
+
+    <!-- Dept filter pills -->
+    <span class="toolbar-label">Filter:</span>
+    <div class="dept-filters" id="dept-filters" role="group" aria-label="Filter by department"></div>
+  </div>
+
+  <!-- ── Main ──────────────────────────────────────────── -->
+  <main class="main-content" role="main">
+
+    <!-- Org Chart View -->
+    <section id="org-view" aria-label="Organization Chart"></section>
+
+    <!-- Directory View -->
+    <section id="directory-view" aria-label="Staff Directory" style="display:none;"></section>
+
+  </main>
+
+  <!-- ── Modal ─────────────────────────────────────────── -->
+  <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Staff profile">
+    <div id="modal" class="modal" style="position:relative;"></div>
+  </div>
+
+  <!-- ── Scripts ───────────────────────────────────────── -->
+  <script src="data.js"></script>
+  <script src="main.js"></script>
+
+</body>
+</html>
