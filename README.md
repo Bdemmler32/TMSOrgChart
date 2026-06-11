@@ -1,5 +1,5 @@
-# TMS Staff Organization Chart
-**Interactive org chart with headshots, contact info, search, and PDF export.**
+# TMS Staff Organization Chart — v0.02
+**Interactive org chart with headshots, contact info, sub-reporting lines, search, and PDF export.**
 
 ---
 
@@ -7,97 +7,87 @@
 
 ```
 tms-org-chart/
-├── index.html          ← Entry point (drop into your server/CMS)
-├── styles.css          ← All visual styles & print/PDF layout
-├── main.js             ← Rendering engine, search, modal, PDF export
-├── data.js             ← Staff data — THIS is what you edit when staff changes
+├── index.html          ← Entry point
+├── styles.css          ← All styles + responsive + print/PDF
+├── main.js             ← Rendering engine, search, modal, lightbox, PDF export
+├── staff-data.xlsx     ← ⭐ Staff data — edit this for all changes
 ├── assets/
 │   └── headshots/      ← Staff headshot photos (JPG)
-└── README.md           ← This file
+└── README.md
 ```
 
 ---
 
 ## Updating Staff Data
 
-All staff info lives in **`data.js`**. No other file needs to change for routine staff updates.
+Open **`staff-data.xlsx`** in Excel or Google Sheets. It has three sheets:
 
-### To update a person's info:
-Find their entry in `data.js` and edit the fields:
-```js
-{
-  id: "kelly-markel",          // Unique identifier — do NOT change
-  name: "Kelly Markel",
-  title: "Publications Managing Editor",
-  ext: "281",
-  direct: "724-814-3108",
-  email: "kmarkel@tms.org",
-  photo: "Markel_Kelly_2026.jpg"   // Filename in assets/headshots/
-}
-```
+### Staff sheet (main)
+Each row is one person. Columns:
 
-### To add a new person:
-1. Add their headshot to `assets/headshots/`
-2. Copy any existing staff entry block in `data.js`
-3. Give it a new unique `id` (e.g. `"jane-smith"`)
-4. Add it to the correct department's `members` array
+| Column | Description |
+|--------|-------------|
+| `id` | Unique key — **never change after creation** |
+| `name` | Full name |
+| `title` | Job title |
+| `ext` | Phone extension |
+| `direct` | Direct phone number |
+| `email` | Email address |
+| `photo` | Filename in `assets/headshots/` |
+| `dept_id` | Must match an `id` in the Departments sheet |
+| `role` | `executive`, `deputy`, `exec_staff`, `dept_head`, `manager`, or `staff` |
+| `reports_to_id` | The `id` of the person they directly report to |
+| `description` | Optional bio text shown in the profile modal |
 
-### To add a new department:
-Copy an existing department block in `data.js` and add it to the `departments` array.
-Then add its color to `styles.css` under the `/* Department palette */` section.
+**Roles explained:**
+- `executive` — CEO (only one)
+- `deputy` — Deputy Executive Director
+- `exec_staff` — Staff reporting directly to CEO outside departments
+- `dept_head` — Department head, shown in the colored header
+- `manager` — Mid-level manager; their reports are indented beneath them
+- `staff` — Regular staff member
 
-### To update the directory date:
-Change `directoryDate` in the `meta` block at the bottom of `data.js`.
+**Sub-reporting:** To show Bob, Cheryl, and Ken under Dave, set their `reports_to_id` to `dave-rasel` and their `role` to `staff`. Dave's `role` should be `manager`.
+
+### Departments sheet
+Defines department display names and colors. Colors: `yellow`, `green`, `blue-light`, `blue`, `pink`, `exec`.
+
+### Meta sheet
+Update `directoryDate` when publishing a new version.
 
 ---
 
-## Adding a New Headshot
-
-- Drop the photo file in `assets/headshots/`
-- Reference the exact filename in the person's `photo` field in `data.js`
-- Recommended: Square or portrait crop, face centered, 400×400px minimum
+## Adding a New Staff Member
+1. Add headshot to `assets/headshots/`
+2. Add a row in the Staff sheet with a unique `id` (e.g. `jane-smith`)
+3. Set `dept_id` and `reports_to_id` appropriately
+4. Save and reload the page
 
 ---
 
 ## PDF Export
-
-Click **Export PDF** in the top-right header. The page will print in landscape orientation at 11×8.5 inches. For best results:
-- Use Chrome or Edge browser
-- In the print dialog, set paper size to **Letter**, orientation to **Landscape**
-- Disable headers/footers in the print dialog
-- Enable "Background graphics" for full color output
+Click **Export PDF** → browser print dialog → set:
+- Paper size: **Letter**, Orientation: **Landscape**
+- Enable **Background graphics**
+- Disable headers/footers
 
 ---
 
 ## Integration into tms.org
 
-### Option A — Standalone iframe embed
-The simplest approach. Host the `tms-org-chart/` folder on your web server and embed with:
+**Option A — Iframe embed:**
 ```html
 <iframe src="/staff/tms-org-chart/index.html"
-        width="100%" height="800px"
+        width="100%" height="820px"
         style="border:none;border-radius:8px;"
         title="TMS Staff Organization Chart">
 </iframe>
 ```
 
-### Option B — Direct page include
-If your CMS supports custom HTML pages, drop the whole folder onto your server and link directly to `index.html`. Works with WordPress, Drupal, any static host.
+**Option B — Direct page** — upload the whole folder, link to `index.html`.
 
-### Option C — Component integration
-The chart uses no frameworks — it's vanilla HTML/CSS/JS. To integrate into a React or Vue app:
-1. Include `data.js` as a module (export `TMS_DATA` with `export const TMS_DATA = {...}`)
-2. Reference `styles.css` in your global stylesheet
-3. Call `init()` from `main.js` after your component mounts
-
-### Google Fonts dependency
-The chart loads Inter and Barlow Condensed from Google Fonts. If your environment blocks external requests, download the fonts and self-host them, then update the `<link>` in `index.html`.
+**Note:** The page loads `staff-data.xlsx` via fetch, so it must be served from a web server (not opened as a local file). Any static host works (Apache, Nginx, S3, Netlify, etc.).
 
 ---
 
-## Browser Support
-Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
-
----
-
-*TMS — The Minerals, Metals & Materials Society | tms.org*
+*TMS — The Minerals, Metals & Materials Society | tms.org | v0.02*
