@@ -17,59 +17,52 @@
 </head>
 <body>
 
-  <!-- ── Sticky top (header + toolbar) ──────────────────── -->
-  <div class="sticky-top">
-
-    <div class="page-header">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div>
-          <span style="font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:#C8102E;letter-spacing:-1px;">TMS</span>
-          <span class="version-badge version-text">v0.02</span>
-        </div>
-        <div class="page-title">Staff <span>Organization Chart</span></div>
-      </div>
-      <span class="page-meta" id="meta-date"></span>
-    </div>
-
-    <div class="toolbar">
-      <!-- Search -->
-      <div class="search-wrap">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" id="staff-search" placeholder="Search name, title, email, ext…" aria-label="Search staff" />
-      </div>
-
-      <!-- View toggles -->
-      <div class="view-toggles" role="group" aria-label="View mode">
-        <button class="view-btn active" id="btn-org-view">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="4" rx="1"/><rect x="2" y="18" width="6" height="4" rx="1"/><rect x="16" y="18" width="6" height="4" rx="1"/><line x1="12" y1="6" x2="12" y2="13"/><path d="M5 13h14"/><line x1="5" y1="13" x2="5" y2="18"/><line x1="19" y1="13" x2="19" y2="18"/></svg>
-          Org Chart
-        </button>
-        <button class="view-btn" id="btn-dir-view">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-          Directory
-        </button>
-      </div>
-
-      <!-- Export -->
-      <button class="btn-export" id="btn-export-pdf">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Export PDF
-      </button>
-
-      <div class="toolbar-sep"></div>
-
-      <!-- Dept filters -->
-      <div class="dept-filters" id="dept-filters" role="group" aria-label="Filter by department"></div>
-    </div>
-
-  </div><!-- /sticky-top -->
-
-  <!-- ── Main content ─────────────────────────────────── -->
+  <!-- ── Page body (no sticky bar) ───────────────────────── -->
   <main class="main-content">
+
+    <!-- Page header row (inside body, not sticky) -->
+    <div class="page-header-row">
+      <div class="page-header-left">
+        <span class="tms-wordmark">TMS</span>
+        <h1 class="page-title">Staff Organization Chart <span class="version-badge version-text">v0.02</span></h1>
+      </div>
+      <div class="page-header-right">
+        <span class="page-meta" id="meta-date"></span>
+        <button class="btn-export" id="btn-export-pdf">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Search + view toggles row (sticky) -->
+    <div class="controls-sticky">
+      <div class="controls-inner">
+        <div class="search-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="staff-search" placeholder="Search name, title, email, ext…" aria-label="Search staff" />
+        </div>
+        <div class="view-toggles" role="group" aria-label="View mode">
+          <button class="view-btn active" id="btn-org-view">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="4" rx="1"/><rect x="2" y="18" width="6" height="4" rx="1"/><rect x="16" y="18" width="6" height="4" rx="1"/><line x1="12" y1="6" x2="12" y2="13"/><path d="M5 13h14"/><line x1="5" y1="13" x2="5" y2="18"/><line x1="19" y1="13" x2="19" y2="18"/></svg>
+            Org Chart
+          </button>
+          <button class="view-btn" id="btn-dir-view">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            Directory
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Org Chart View -->
     <section id="org-view" aria-label="Organization Chart">
       <div class="no-results">Loading staff data…</div>
     </section>
+
+    <!-- Directory View -->
     <section id="directory-view" aria-label="Staff Directory" style="display:none;"></section>
+
   </main>
 
   <!-- ── Modal ──────────────────────────────────────────── -->
