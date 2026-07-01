@@ -1,5 +1,5 @@
 /* =====================================================
-   TMS Organization Chart v0.08 — styles.css
+   TMS Organization Chart v0.09 — styles.css
    ===================================================== */
 
 :root {
@@ -140,7 +140,7 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
   background: var(--dept-exec);
   border-bottom: 3px solid #000;
   min-height: 0;
-  gap: 0;  /* no gap between EXECUTIVE title and Trudi's card */
+  gap: 8px; /* matches other dept headers — space between title and card */
 }
 
 .dept-block.dept-exec .dept-name { color: #fff; }
