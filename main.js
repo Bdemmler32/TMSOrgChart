@@ -1,5 +1,5 @@
 /**
- * TMS Organization Chart v0.09 — main.js
+ * TMS Organization Chart v0.14 — main.js
  */
 (function () {
   'use strict';
@@ -502,9 +502,10 @@
     hdrRow.innerHTML =
       '<div class="page-header-left">' +
         '<img src="assets/tms-logo.png" alt="TMS" class="tms-logo-img" />' +
-        '<h1 class="page-title">Staff Organization Chart</h1>' +
+        '<h1 class="page-title">Staff Organization Chart' +
+        '<span class="version-badge version-text">' + esc(document._tmsVersion || '') + '</span></h1>' +
       '</div>' +
-      '<span class="page-meta">' + esc(document.getElementById('meta-date').textContent) + '</span>';
+      '<span class="page-meta">' + esc(document._tmsDateStr || document.getElementById('meta-date').textContent) + '</span>';
     frame.appendChild(hdrRow);
 
     // Clone the org-view content (already rendered)
@@ -669,9 +670,12 @@
       const ver = metaObj.version || 'v0.14';
       const dateStr = 'Directory as of ' + (metaObj.directoryDate || '');
       document.getElementById('meta-date').textContent = dateStr;
+      // Apply version to all existing .version-text spans
       document.querySelectorAll('.version-text').forEach(el => el.textContent = ver);
+      // Store so buildPrintFrame can use it too (it adds its own .version-text span)
+      document._tmsVersion = ver;
+      document._tmsDateStr = dateStr;
       render();
-      // Build print frame in background after initial render settles
       requestAnimationFrame(() => setTimeout(buildPrintFrame, 200));
     });
 
