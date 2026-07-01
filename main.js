@@ -204,7 +204,13 @@
       membersEl.className = 'dept-members';
 
       const managers = members.filter(p => p.role === 'manager');
-      const directStaff = members.filter(p => p.role === 'staff' && (!p.reports_to || p.reports_to === (head?.id || '')));
+      const managerIds = new Set(managers.map(m => m.id));
+      // directStaff: reports to dept head, or reports_to is blank, or reports_to target isn't a known manager
+      const directStaff = members.filter(p =>
+        p.role === 'staff' && (!p.reports_to || p.reports_to === (head?.id || '') || !managerIds.has(p.reports_to))
+      );
+      // Track which staff are claimed by a manager group so we don't double-render
+      const claimedIds = new Set();
 
       managers.forEach(mgr => {
         const mgrP = { ...mgr, deptName: dept.name };
@@ -213,6 +219,8 @@
         const reportsVisible = reports.filter(p => matchSearch({ ...p, deptName: dept.name }));
 
         if (searchQuery && !mgrMatch && reportsVisible.length === 0) return;
+
+        reports.forEach(r => claimedIds.add(r.id));
 
         const group = document.createElement('div');
         group.className = 'manager-group';
@@ -230,6 +238,7 @@
       });
 
       directStaff.forEach(p => {
+        if (claimedIds.has(p.id)) return; // already rendered under a manager
         if (searchQuery && !matchSearch({ ...p, deptName: dept.name })) return;
         membersEl.appendChild(makeCard({ ...p, deptName: dept.name }));
       });
