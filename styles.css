@@ -1,5 +1,5 @@
 /* =====================================================
-   TMS Organization Chart v0.05 — styles.css
+   TMS Organization Chart v0.06 — styles.css
    ===================================================== */
 
 :root {
@@ -135,26 +135,29 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
 
 .exec-block { width: 100%; }
 
-/* Executive dept header */
+/* Executive dept header — solid red, black separator */
 .dept-block.dept-exec .dept-header {
-  background: var(--dept-exec-bg);
-  border-bottom: 3px solid var(--dept-exec);
+  background: var(--dept-exec);
+  border-bottom: 3px solid #000;
   min-height: 0;
 }
 
-.dept-block.dept-exec .dept-name { color: var(--tms-navy); }
+.dept-block.dept-exec .dept-name { color: #fff; }
 
-/* CEO head card inside exec header */
-.staff-card.ceo-head-card { background: rgba(255,255,255,.7) !important; }
-.staff-card.ceo-head-card .staff-name { color: var(--dept-exec); font-size: .88rem; }
+/* CEO head card inside exec red header */
+.staff-card.ceo-head-card { background: rgba(255,255,255,.15) !important; }
+.staff-card.ceo-head-card:hover { background: rgba(255,255,255,.28) !important; border-color: rgba(255,255,255,.4) !important; }
+.staff-card.ceo-head-card .staff-name { color: #fff; font-size: .88rem; }
+.staff-card.ceo-head-card .staff-title { color: rgba(255,255,255,.82); }
+.staff-card.ceo-head-card .staff-contact { color: rgba(255,255,255,.6); }
 .staff-card.ceo-head-card .staff-photo,
 .staff-card.ceo-head-card .staff-photo-placeholder {
-  width: 54px; height: 54px; border: 2px solid var(--dept-exec);
+  width: 54px; height: 54px; border: 2px solid rgba(255,255,255,.6);
 }
 
-/* exec members row — horizontal, wrapping */
-.exec-block .dept-members { flex-direction: row; flex-wrap: wrap; gap: 6px; }
-.exec-block .dept-members .staff-card { flex: 1 1 180px; max-width: 280px; }
+/* exec members row — centered horizontally, cards left-aligned internally */
+.exec-block .dept-members { flex-direction: row; flex-wrap: wrap; gap: 6px; justify-content: center; }
+.exec-block .dept-members .staff-card { flex: 0 1 280px; min-width: 200px; }
 
 /* ── Dept grid ───────────────────────────────────────── */
 .dept-grid {
@@ -181,22 +184,23 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
 
 .dept-header {
   padding: 10px 12px 10px;
-  /* fixed min-height so all dept headers are the same height */
+  /* min-height keeps all dept headers the same height on desktop */
   min-height: 130px;
   display: flex; flex-direction: column;
+  justify-content: space-between;
 }
 
 .dept-name {
   font-family: var(--font-display);
   font-size: .82rem; font-weight: 800;
   text-transform: uppercase; letter-spacing: .05em;
-  color: var(--tms-navy); margin-bottom: 8px;
+  color: var(--tms-navy); margin-bottom: 0;
   line-height: 1.2; text-align: center;
 }
 
-/* Dept head card pushed to bottom of header so all align */
+/* Dept head card — no extra flex stretch, sits directly below name */
 .dept-head-wrap {
-  flex: 1; display: flex; align-items: flex-end;
+  display: flex; align-items: flex-end;
 }
 
 /* ── Staff card ──────────────────────────────────────── */

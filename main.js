@@ -1,5 +1,5 @@
 /**
- * TMS Organization Chart v0.05 — main.js
+ * TMS Organization Chart v0.06 — main.js
  */
 (function () {
   'use strict';
@@ -482,7 +482,7 @@
   /* ── Init ─────────────────────────────────────────────── */
   function init() {
     loadExcel('staff-data.xlsx', function () {
-      const ver = metaObj.version || 'v0.05';
+      const ver = metaObj.version || 'v0.06';
       const dateStr = 'Directory as of ' + (metaObj.directoryDate || '');
       document.getElementById('meta-date').textContent = dateStr;
       document.querySelectorAll('.version-text').forEach(el => el.textContent = ver);
