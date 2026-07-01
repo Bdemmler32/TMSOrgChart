@@ -1,5 +1,5 @@
 /* =====================================================
-   TMS Organization Chart v0.03 — styles.css
+   TMS Organization Chart v0.05 — styles.css
    ===================================================== */
 
 :root {
@@ -130,37 +130,31 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
 /* ── Sections ─────────────────────────────────────────── */
 #org-view, #directory-view { padding-top: 18px; }
 
-/* ── Executive band ──────────────────────────────────── */
-.exec-band {
+/* ── Executive row (full-width, above dept grid) ─────── */
+.exec-row { margin-bottom: 16px; }
+
+.exec-block { width: 100%; }
+
+/* Executive dept header */
+.dept-block.dept-exec .dept-header {
   background: var(--dept-exec-bg);
-  border: 2px solid var(--dept-exec);
-  border-radius: var(--card-radius);
-  margin-bottom: 16px;
-  overflow: hidden;
+  border-bottom: 3px solid var(--dept-exec);
+  min-height: 0;
 }
 
-.exec-band-header {
-  background: var(--dept-exec);
-  padding: 7px 16px; text-align: center;
-}
-.exec-band-title {
-  font-family: var(--font-display); font-size: .9rem; font-weight: 800;
-  text-transform: uppercase; letter-spacing: .07em; color: #fff;
+.dept-block.dept-exec .dept-name { color: var(--tms-navy); }
+
+/* CEO head card inside exec header */
+.staff-card.ceo-head-card { background: rgba(255,255,255,.7) !important; }
+.staff-card.ceo-head-card .staff-name { color: var(--dept-exec); font-size: .88rem; }
+.staff-card.ceo-head-card .staff-photo,
+.staff-card.ceo-head-card .staff-photo-placeholder {
+  width: 54px; height: 54px; border: 2px solid var(--dept-exec);
 }
 
-.exec-band-body {
-  padding: 12px 14px;
-  display: flex; gap: 10px; flex-wrap: wrap;
-  align-items: stretch; justify-content: center;
-}
-
-/* CEO stands out */
-.staff-card.ceo-card {
-  border: 2px solid var(--dept-exec) !important;
-  background: #fff !important;
-  box-shadow: 0 3px 12px rgba(200,16,46,.18) !important;
-}
-.staff-card.ceo-card .staff-name { font-size: .9rem; color: var(--dept-exec); }
+/* exec members row — horizontal, wrapping */
+.exec-block .dept-members { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+.exec-block .dept-members .staff-card { flex: 1 1 180px; max-width: 280px; }
 
 /* ── Dept grid ───────────────────────────────────────── */
 .dept-grid {
@@ -443,21 +437,10 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
   /* Single column dept grid on mobile */
   .dept-grid { grid-template-columns: 1fr; }
 
-  /* Exec band: stack cards horizontally but wrap — remove the tall stretch */
-  .exec-band-body {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .staff-card.in-exec-band {
-    flex: 0 0 auto;
-    width: calc(50% - 4px);
-    max-width: none;
-    min-width: 0;
-  }
-  /* CEO takes full width on mobile */
-  .staff-card.in-exec-band.ceo-card {
-    width: 100%;
+  /* Exec block members — stack to single column on mobile */
+  .exec-block .dept-members .staff-card {
+    flex: 1 1 100%;
+    max-width: 100%;
   }
 
   .dept-header { min-height: 0; }
@@ -485,19 +468,17 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
   .page-header-row { padding: 4px 0 8px; }
   .page-title { font-size: 1rem; }
 
-  .exec-band { margin-bottom: 8px; }
-  .exec-band-body { flex-wrap: nowrap; gap: 5px; padding: 7px; justify-content: center; }
-  .staff-card.in-exec-band { flex: 1 1 0; min-width: 0; max-width: none; }
+  .exec-row { margin-bottom: 8px; }
+  .exec-block .dept-members { gap: 4px; }
+  .exec-block .dept-members .staff-card { flex: 1 1 160px; }
 
   .dept-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; }
   .dept-block { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
   .dept-header { min-height: 0; }
   .staff-card { padding: 3px 5px; gap: 4px; break-inside: avoid; }
   .staff-photo, .staff-photo-placeholder { width: 30px !important; height: 30px !important; font-size: .75rem !important; }
-  .staff-card.in-exec-band .staff-photo,
-  .staff-card.in-exec-band .staff-photo-placeholder { width: 36px !important; height: 36px !important; }
-  .staff-card.ceo-card .staff-photo,
-  .staff-card.ceo-card .staff-photo-placeholder { width: 42px !important; height: 42px !important; }
+  .staff-card.ceo-head-card .staff-photo,
+  .staff-card.ceo-head-card .staff-photo-placeholder { width: 40px !important; height: 40px !important; }
   .staff-name { font-size: .68rem; }
   .staff-title { font-size: .58rem; }
   .staff-contact { font-size: .54rem; }

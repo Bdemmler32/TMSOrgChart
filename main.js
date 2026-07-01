@@ -1,5 +1,5 @@
 /**
- * TMS Organization Chart v0.03 — main.js
+ * TMS Organization Chart v0.05 — main.js
  */
 (function () {
   'use strict';
@@ -134,33 +134,53 @@
     const container = document.getElementById('org-view');
     container.innerHTML = '';
 
-    /* ─ Executive band ─ */
-    const execPeople = allPeople
-      .filter(p => p.dept_id === 'executive')
+    /* ─ Executive block — same structure as dept blocks ─ */
+    const ceo       = allPeople.find(p => p.dept_id === 'executive' && p.role === 'executive');
+    const execStaff = allPeople
+      .filter(p => p.dept_id === 'executive' && p.role !== 'executive')
       .sort((a, b) => {
-        const order = { executive: 0, deputy: 1, exec_staff: 2 };
+        const order = { deputy: 0, exec_staff: 1 };
         return (order[a.role] ?? 9) - (order[b.role] ?? 9);
       });
 
-    const band = document.createElement('div');
-    band.className = 'exec-band';
+    const execVisible = [ceo, ...execStaff].filter(p => p && matchSearch({ ...p, deptName: 'Executive' }));
 
-    const bandHdr = document.createElement('div');
-    bandHdr.className = 'exec-band-header';
-    bandHdr.innerHTML = '<span class="exec-band-title">Executive</span>';
-    band.appendChild(bandHdr);
+    if (execVisible.length > 0) {
+      const execRow = document.createElement('div');
+      execRow.className = 'exec-row';
 
-    const bandBody = document.createElement('div');
-    bandBody.className = 'exec-band-body';
+      const execBlock = document.createElement('div');
+      execBlock.className = 'dept-block dept-exec exec-block';
 
-    execPeople.forEach(p => {
-      if (!matchSearch(p)) return;
-      const isCEO = p.role === 'executive';
-      bandBody.appendChild(makeCard({ ...p }, 'in-exec-band' + (isCEO ? ' ceo-card' : '')));
-    });
+      /* Header — TMS red, Trudi as dept head */
+      const execHdr = document.createElement('div');
+      execHdr.className = 'dept-header';
 
-    band.appendChild(bandBody);
-    container.appendChild(band);
+      const execNameEl = document.createElement('div');
+      execNameEl.className = 'dept-name';
+      execNameEl.textContent = 'Executive';
+      execHdr.appendChild(execNameEl);
+
+      if (ceo && matchSearch({ ...ceo, deptName: 'Executive' })) {
+        const wrap = document.createElement('div');
+        wrap.className = 'dept-head-wrap';
+        wrap.appendChild(makeCard({ ...ceo, deptName: 'Executive' }, 'dept-head-card ceo-head-card'));
+        execHdr.appendChild(wrap);
+      }
+      execBlock.appendChild(execHdr);
+
+      /* Members body */
+      const execMembers = document.createElement('div');
+      execMembers.className = 'dept-members';
+      execStaff.forEach(p => {
+        if (!matchSearch({ ...p, deptName: 'Executive' })) return;
+        execMembers.appendChild(makeCard({ ...p, deptName: 'Executive' }));
+      });
+      execBlock.appendChild(execMembers);
+
+      execRow.appendChild(execBlock);
+      container.appendChild(execRow);
+    }
 
     /* ─ Dept grid ─ */
     const grid = document.createElement('div');
@@ -462,7 +482,7 @@
   /* ── Init ─────────────────────────────────────────────── */
   function init() {
     loadExcel('staff-data.xlsx', function () {
-      const ver = metaObj.version || 'v0.03';
+      const ver = metaObj.version || 'v0.05';
       const dateStr = 'Directory as of ' + (metaObj.directoryDate || '');
       document.getElementById('meta-date').textContent = dateStr;
       document.querySelectorAll('.version-text').forEach(el => el.textContent = ver);
