@@ -11,6 +11,7 @@
 
   let currentView = 'org';
   let searchQuery = '';
+  let dirSort = 'role';  // 'role' | 'alpha' | 'dept'
   let lightboxOpen = false;
 
   /* ── Excel loader ───────────────────────────────────── */
@@ -273,67 +274,104 @@
     container.appendChild(grid);
   }
 
-  /* ── Directory view ───────────────────────────────────── */
-  function renderDirectoryView() {
-    const container = document.getElementById('directory-view');
-    container.innerHTML = '';
+  /* ── Directory card builder ────────────────────────────── */
+  function makeDirCard(p) {
+    const card = document.createElement('div');
+    card.className = 'dir-card dept-' + p.deptColor;
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', 'View ' + p.name);
 
-    const grid = document.createElement('div');
-    grid.className = 'directory-grid';
+    card.appendChild(makePhoto(p, p.photo ? 'dir-photo' : 'dir-photo-placeholder'));
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'dir-name';
+    nameEl.textContent = p.name;
+    card.appendChild(nameEl);
+
+    const titleEl = document.createElement('div');
+    titleEl.className = 'dir-title';
+    titleEl.textContent = p.title;
+    card.appendChild(titleEl);
+
+    const badge = document.createElement('span');
+    badge.className = 'dir-dept-badge';
+    badge.textContent = p.deptName;
+    card.appendChild(badge);
+
+    const contact = document.createElement('div');
+    contact.className = 'dir-contact';
+    contact.innerHTML =
+      '<div class="dir-contact-row">' + icoPhone() +
+      '<span>Ext. ' + esc(p.ext) + ' · <a href="tel:' + esc(p.direct) + '">' + esc(p.direct) + '</a></span></div>' +
+      '<div class="dir-contact-row">' + icoEmail() +
+      '<a href="mailto:' + esc(p.email) + '">' + esc(p.email) + '</a></div>';
+    card.appendChild(contact);
+
+    card.addEventListener('pointerdown', () => openModal(p));
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openModal(p); });
+    return card;
+  }
+
+  /* ── Directory view ────────────────────────────────────── */
+  function renderDirectoryView() {
+    const wrap = document.getElementById('directory-grid-wrap');
+    wrap.innerHTML = '';
 
     const roleOrder = { executive: 0, deputy: 1, exec_staff: 2, dept_head: 3, manager: 4, staff: 5 };
-    const sorted = [...allPeople].sort((a, b) => {
-      const d = (roleOrder[a.role] ?? 9) - (roleOrder[b.role] ?? 9);
-      return d !== 0 ? d : a.name.localeCompare(b.name);
-    });
+    // Dept display order matches org chart column order
+    const deptOrder = ['executive','events','member-services','content','marketing','finance'];
 
-    let shown = 0;
-    sorted.forEach(p => {
-      if (!matchSearch(p)) return;
-      shown++;
+    let sorted = [...allPeople].filter(p => matchSearch(p));
 
-      const card = document.createElement('div');
-      card.className = 'dir-card dept-' + p.deptColor;
-      card.setAttribute('role', 'button');
-      card.setAttribute('tabindex', '0');
-      card.setAttribute('aria-label', 'View ' + p.name);
+    if (dirSort === 'alpha') {
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+      const grid = document.createElement('div');
+      grid.className = 'directory-grid';
+      sorted.forEach(p => grid.appendChild(makeDirCard(p)));
+      if (sorted.length === 0) grid.innerHTML = '<div class="no-results" style="grid-column:1/-1">No staff match your search.</div>';
+      wrap.appendChild(grid);
 
-      /* Build card children with DOM — no innerHTML += after appendChild */
-      card.appendChild(makePhoto(p, p.photo ? 'dir-photo' : 'dir-photo-placeholder'));
+    } else if (dirSort === 'dept') {
+      // Group by department in org-chart column order
+      const groups = {};
+      deptOrder.forEach(id => { groups[id] = []; });
+      sorted.forEach(p => {
+        if (groups[p.dept_id]) groups[p.dept_id].push(p);
+        else groups['executive'] = (groups['executive'] || []).concat(p);
+      });
+      deptOrder.forEach(deptId => {
+        const members = groups[deptId];
+        if (!members || members.length === 0) return;
+        // Sort within group by role then name
+        members.sort((a, b) => {
+          const d = (roleOrder[a.role] ?? 9) - (roleOrder[b.role] ?? 9);
+          return d !== 0 ? d : a.name.localeCompare(b.name);
+        });
+        const deptName = deptMap[deptId]?.name || 'Executive';
+        const groupHdr = document.createElement('div');
+        groupHdr.className = 'dir-dept-group-header';
+        groupHdr.textContent = deptName;
+        wrap.appendChild(groupHdr);
+        const grid = document.createElement('div');
+        grid.className = 'directory-grid';
+        members.forEach(p => grid.appendChild(makeDirCard(p)));
+        wrap.appendChild(grid);
+      });
+      if (sorted.length === 0) wrap.innerHTML = '<div class="no-results">No staff match your search.</div>';
 
-      const nameEl = document.createElement('div');
-      nameEl.className = 'dir-name';
-      nameEl.textContent = p.name;
-      card.appendChild(nameEl);
-
-      const titleEl = document.createElement('div');
-      titleEl.className = 'dir-title';
-      titleEl.textContent = p.title;
-      card.appendChild(titleEl);
-
-      const badge = document.createElement('span');
-      badge.className = 'dir-dept-badge';
-      badge.textContent = p.deptName;
-      card.appendChild(badge);
-
-      const contact = document.createElement('div');
-      contact.className = 'dir-contact';
-      contact.innerHTML =
-        '<div class="dir-contact-row">' + icoPhone() +
-        '<span>Ext. ' + esc(p.ext) + ' · <a href="tel:' + esc(p.direct) + '">' + esc(p.direct) + '</a></span></div>' +
-        '<div class="dir-contact-row">' + icoEmail() +
-        '<a href="mailto:' + esc(p.email) + '">' + esc(p.email) + '</a></div>';
-      card.appendChild(contact);
-
-      card.addEventListener('pointerdown', () => openModal(p));
-      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') openModal(p); });
-      grid.appendChild(card);
-    });
-
-    if (shown === 0) {
-      grid.innerHTML = '<div class="no-results" style="grid-column:1/-1">No staff match your search.</div>';
+    } else {
+      // Role order (default)
+      sorted.sort((a, b) => {
+        const d = (roleOrder[a.role] ?? 9) - (roleOrder[b.role] ?? 9);
+        return d !== 0 ? d : a.name.localeCompare(b.name);
+      });
+      const grid = document.createElement('div');
+      grid.className = 'directory-grid';
+      sorted.forEach(p => grid.appendChild(makeDirCard(p)));
+      if (sorted.length === 0) grid.innerHTML = '<div class="no-results" style="grid-column:1/-1">No staff match your search.</div>';
+      wrap.appendChild(grid);
     }
-    container.appendChild(grid);
   }
 
   /* ── SVG icons ───────────────────────────────────────── */
@@ -448,18 +486,52 @@
     lightboxOpen = false;
   }
 
-  /* ── PDF export ───────────────────────────────────────── */
+  /* ── Print frame — pre-rendered org chart for instant PDF ── */
+  function buildPrintFrame() {
+    const frame = document.getElementById('print-frame');
+    if (!frame) return;
+    frame.innerHTML = '';
+
+    // Page header
+    const hdrRow = document.createElement('div');
+    hdrRow.className = 'page-header-row';
+    hdrRow.innerHTML =
+      '<div class="page-header-left">' +
+        '<span class="tms-wordmark">TMS</span>' +
+        '<h1 class="page-title">Staff Organization Chart</h1>' +
+      '</div>' +
+      '<span class="page-meta">' + esc(document.getElementById('meta-date').textContent) + '</span>';
+    frame.appendChild(hdrRow);
+
+    // Clone the org-view content (already rendered)
+    const orgView = document.getElementById('org-view');
+    if (orgView) {
+      const clone = orgView.cloneNode(true);
+      clone.style.display = '';
+      clone.style.paddingTop = '0';
+      frame.appendChild(clone);
+    }
+  }
+
+  /* ── PDF export — instant, no re-render delay ─────────── */
   function exportPDF() {
-    const prev = { view: currentView, search: searchQuery };
-    currentView = 'org'; searchQuery = '';
-    document.getElementById('staff-search').value = '';
-    syncViewBtns(); render();
-    requestAnimationFrame(() => setTimeout(() => {
-      window.print();
-      currentView = prev.view; searchQuery = prev.search;
-      document.getElementById('staff-search').value = prev.search;
-      syncViewBtns(); render();
-    }, 350));
+    if (currentView === 'directory') return;
+    buildPrintFrame(); // refresh clone in case search changed
+    window.print();
+  }
+
+  /* ── Keep export button state in sync with view ─────────── */
+  function syncExportBtn() {
+    const btn = document.getElementById('btn-export-pdf');
+    if (currentView === 'directory') {
+      btn.disabled = true;
+      btn.classList.add('disabled');
+      btn.title = 'Switch to Org Chart view to export PDF';
+    } else {
+      btn.disabled = false;
+      btn.classList.remove('disabled');
+      btn.title = '';
+    }
   }
 
   /* ── Render ───────────────────────────────────────────── */
@@ -476,26 +548,44 @@
   function syncViewBtns() {
     document.getElementById('btn-org-view').classList.toggle('active', currentView === 'org');
     document.getElementById('btn-dir-view').classList.toggle('active', currentView === 'directory');
+    syncExportBtn();
   }
 
   /* ── Init ─────────────────────────────────────────────── */
   function init() {
     loadExcel('staff-data.xlsx', function () {
-      const ver = metaObj.version || 'v0.09';
+      const ver = metaObj.version || 'v0.10';
       const dateStr = 'Directory as of ' + (metaObj.directoryDate || '');
       document.getElementById('meta-date').textContent = dateStr;
       document.querySelectorAll('.version-text').forEach(el => el.textContent = ver);
       render();
+      // Build print frame in background after initial render settles
+      requestAnimationFrame(() => setTimeout(buildPrintFrame, 200));
+    });
+
+    // Directory sort buttons
+    document.querySelectorAll('.dir-sort-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        dirSort = this.getAttribute('data-sort');
+        document.querySelectorAll('.dir-sort-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        renderDirectoryView();
+      });
     });
 
     let searchTimer;
     document.getElementById('staff-search').addEventListener('input', function () {
       clearTimeout(searchTimer);
-      searchTimer = setTimeout(() => { searchQuery = this.value.trim(); render(); }, 160);
+      searchTimer = setTimeout(() => {
+        searchQuery = this.value.trim();
+        render();
+        if (currentView === 'org') requestAnimationFrame(() => setTimeout(buildPrintFrame, 100));
+      }, 160);
     });
 
     document.getElementById('btn-org-view').addEventListener('click', () => {
       currentView = 'org'; syncViewBtns(); render();
+      requestAnimationFrame(() => setTimeout(buildPrintFrame, 100));
     });
     document.getElementById('btn-dir-view').addEventListener('click', () => {
       currentView = 'directory'; syncViewBtns(); render();

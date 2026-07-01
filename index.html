@@ -61,7 +61,20 @@
     </section>
 
     <!-- Directory View -->
-    <section id="directory-view" aria-label="Staff Directory" style="display:none;"></section>
+    <section id="directory-view" aria-label="Staff Directory" style="display:none;">
+      <div class="dir-controls">
+        <span class="dir-sort-label">Sort by:</span>
+        <div class="dir-sort-btns" role="group" aria-label="Sort directory">
+          <button class="dir-sort-btn active" data-sort="role">Role</button>
+          <button class="dir-sort-btn" data-sort="alpha">A – Z</button>
+          <button class="dir-sort-btn" data-sort="dept">Department</button>
+        </div>
+      </div>
+      <div id="directory-grid-wrap"></div>
+    </section>
+
+    <!-- Hidden print frame — always rendered, instant PDF -->
+    <div id="print-frame" aria-hidden="true"></div>
 
   </main>
 
