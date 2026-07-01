@@ -1,5 +1,5 @@
 /* =====================================================
-   TMS Organization Chart v0.06 — styles.css
+   TMS Organization Chart v0.07 — styles.css
    ===================================================== */
 
 :root {
@@ -140,6 +140,7 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
   background: var(--dept-exec);
   border-bottom: 3px solid #000;
   min-height: 0;
+  gap: 0;  /* no gap between EXECUTIVE title and Trudi's card */
 }
 
 .dept-block.dept-exec .dept-name { color: #fff; }
@@ -158,6 +159,9 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
 /* exec members row — centered horizontally, cards left-aligned internally */
 .exec-block .dept-members { flex-direction: row; flex-wrap: wrap; gap: 6px; justify-content: center; }
 .exec-block .dept-members .staff-card { flex: 0 1 280px; min-width: 200px; }
+
+/* Trudi CEO card — constrain width so it doesn't stretch full header */
+.dept-block.dept-exec .dept-head-wrap { max-width: 340px; }
 
 /* ── Dept grid ───────────────────────────────────────── */
 .dept-grid {
@@ -184,10 +188,10 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
 
 .dept-header {
   padding: 10px 12px 10px;
-  /* min-height keeps all dept headers the same height on desktop */
-  min-height: 130px;
   display: flex; flex-direction: column;
-  justify-content: space-between;
+  /* name at top, card directly below — no stretching gap between them */
+  justify-content: flex-start;
+  gap: 8px;
 }
 
 .dept-name {
@@ -198,9 +202,11 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
   line-height: 1.2; text-align: center;
 }
 
-/* Dept head card — no extra flex stretch, sits directly below name */
+/* Dept head wrap — min-height here keeps all dept head cards
+   vertically consistent without adding space above them */
 .dept-head-wrap {
-  display: flex; align-items: flex-end;
+  display: flex; align-items: flex-start;
+  min-height: 90px;
 }
 
 /* ── Staff card ──────────────────────────────────────── */
