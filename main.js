@@ -517,11 +517,10 @@
     }
   }
 
-  /* ── PDF export — instant, no re-render delay ─────────── */
+  /* ── PDF export — truly instant, frame already built ──── */
   function exportPDF() {
     if (currentView === 'directory') return;
-    buildPrintFrame(); // refresh clone in case search changed
-    window.print();
+    window.print(); // frame is pre-built; no work needed here
   }
 
   /* ── Keep export button state in sync with view ─────────── */
@@ -558,7 +557,7 @@
   /* ── Init ─────────────────────────────────────────────── */
   function init() {
     loadExcel('staff-data.xlsx', function () {
-      const ver = metaObj.version || 'v0.11';
+      const ver = metaObj.version || 'v0.12';
       const dateStr = 'Directory as of ' + (metaObj.directoryDate || '');
       document.getElementById('meta-date').textContent = dateStr;
       document.querySelectorAll('.version-text').forEach(el => el.textContent = ver);
