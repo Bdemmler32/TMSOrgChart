@@ -372,6 +372,9 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
 
 /* Override all mobile breakpoints inside print-frame */
 #print-frame .dept-grid { grid-template-columns: repeat(5, 1fr) !important; }
+/* Light stroke on all dept blocks so they read against white page background */
+#print-frame .dept-block { box-shadow: none !important; border: 1px solid #c8d4e0 !important; }
+#print-frame .exec-block { border: 1px solid #c8d4e0 !important; }
 #print-frame .exec-block .dept-members {
   flex-direction: row !important;
   flex-wrap: wrap !important;

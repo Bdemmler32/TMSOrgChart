@@ -525,7 +525,6 @@
     const label = document.getElementById('export-label');
     const icon  = document.getElementById('export-icon');
 
-    // Show loading state
     btn.disabled = true;
     label.textContent = 'Generating…';
     icon.style.opacity = '.4';
@@ -539,21 +538,47 @@
     frame.style.visibility = 'visible';
     frame.style.width      = '1400px';
 
-    // Page dimensions: 11×8.5 in at 96dpi = 1056×816px
-    const PW = 1056;
-    const PH = 816;
-    const scale = PW / 1400; // scale frame width to page width
+    // ── Fix: html2canvas ignores object-fit:cover on <img>.
+    // Convert all staff photo <img> tags to <div> with background-image
+    // so the circular crop renders correctly in the PDF.
+    const photoImgs = frame.querySelectorAll('img.staff-photo');
+    const conversions = [];
+    photoImgs.forEach(img => {
+      const div = document.createElement('div');
+      // Copy all classes and computed size
+      div.className = img.className;
+      const w = img.offsetWidth  || parseInt(img.style.width)  || 46;
+      const h = img.offsetHeight || parseInt(img.style.height) || 46;
+      div.style.width           = w + 'px';
+      div.style.height          = h + 'px';
+      div.style.borderRadius    = '50%';
+      div.style.backgroundImage = 'url("' + img.src + '")';
+      div.style.backgroundSize  = 'cover';
+      div.style.backgroundPosition = 'top center';
+      div.style.flexShrink      = '0';
+      div.style.border          = img.style.border || '2px solid rgba(255,255,255,0.8)';
+      div.style.boxSizing       = 'border-box';
+      img.parentNode.insertBefore(div, img);
+      img.style.display = 'none';
+      conversions.push({ img, div });
+    });
 
     html2canvas(frame, {
-      scale: 2,            // 2x for crisp output
-      useCORS: true,       // allow cross-origin images (headshots)
+      scale: 2,
+      useCORS: true,
       allowTaint: false,
       backgroundColor: '#ffffff',
       width: 1400,
       windowWidth: 1400,
       logging: false,
     }).then(canvas => {
-      // Restore off-screen
+      // Restore photo <img> tags
+      conversions.forEach(({ img, div }) => {
+        img.style.display = '';
+        div.remove();
+      });
+
+      // Restore frame off-screen
       frame.style.position   = 'fixed';
       frame.style.left       = '-19999px';
       frame.style.top        = '-19999px';
@@ -567,32 +592,34 @@
         format: 'letter',
       });
 
-      // Page is 11×8.5". Margins .25" each side → usable 10.5×8"
-      const margin  = 0.25;
-      const useW    = 11 - margin * 2;   // 10.5"
-      const useH    = 8.5 - margin * 2;  // 8"
+      // Usable area: 11×8.5" minus 0.25" margins each side
+      const margin = 0.25;
+      const useW   = 11 - margin * 2;   // 10.5"
+      const useH   = 8.5 - margin * 2;  // 8"
 
-      // Scale canvas to fit within usable area (maintain aspect ratio)
-      const canvasW = canvas.width / 2;   // canvas is 2x scaled
+      // canvas is rendered at 2× — divide back to logical pixels
+      const canvasW = canvas.width / 2;
       const canvasH = canvas.height / 2;
-      const ratio   = Math.min(useW / canvasW * 96, useH / canvasH * 96) / 96;
-      const imgW    = canvasW * ratio;
-      const imgH    = canvasH * ratio;
 
-      // Center on page
+      // Scale to fit width; if too tall, scale to fit height instead
+      const ratio = Math.min(useW / (canvasW / 96), useH / (canvasH / 96));
+      const imgW  = (canvasW / 96) * ratio;
+      const imgH  = (canvasH / 96) * ratio;
+
+      // Top-aligned: x centered, y pinned to top margin
       const x = margin + (useW - imgW) / 2;
-      const y = margin + (useH - imgH) / 2;
+      const y = margin; // top-aligned, not vertically centered
 
-      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      const imgData = canvas.toDataURL('image/jpeg', 0.93);
       pdf.addImage(imgData, 'JPEG', x, y, imgW, imgH);
       pdf.save('TMS-Staff-Organization-Chart.pdf');
 
-      // Restore button
       btn.disabled = false;
       label.textContent = 'Export PDF';
       icon.style.opacity = '';
     }).catch(err => {
       console.error('PDF export failed:', err);
+      conversions.forEach(({ img, div }) => { img.style.display = ''; div.remove(); });
       frame.style.position   = 'fixed';
       frame.style.left       = '-19999px';
       frame.style.top        = '-19999px';
@@ -639,7 +666,7 @@
   /* ── Init ─────────────────────────────────────────────── */
   function init() {
     loadExcel('staff-data.xlsx', function () {
-      const ver = metaObj.version || 'v0.13';
+      const ver = metaObj.version || 'v0.14';
       const dateStr = 'Directory as of ' + (metaObj.directoryDate || '');
       document.getElementById('meta-date').textContent = dateStr;
       document.querySelectorAll('.version-text').forEach(el => el.textContent = ver);
