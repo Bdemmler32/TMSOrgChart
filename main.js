@@ -1,5 +1,5 @@
 /**
- * TMS Organization Chart v0.07 — main.js
+ * TMS Organization Chart v0.08 — main.js
  */
 (function () {
   'use strict';
@@ -408,8 +408,7 @@
     contact.innerHTML =
       row(icoPhone(), 'Extension', 'Ext. ' + esc(person.ext)) +
       row(icoPhone(), 'Direct Line', '<a href="tel:' + esc(person.direct) + '">' + esc(person.direct) + '</a>') +
-      row(icoEmail(), 'Email', '<a href="mailto:' + esc(person.email) + '">' + esc(person.email) + '</a>') +
-      row(icoDesk(), 'Department', esc(person.deptName));
+      row(icoEmail(), 'Email', '<a href="mailto:' + esc(person.email) + '">' + esc(person.email) + '</a>');
     modal.appendChild(contact);
 
     if (person.description && person.description.trim()) {
@@ -482,7 +481,7 @@
   /* ── Init ─────────────────────────────────────────────── */
   function init() {
     loadExcel('staff-data.xlsx', function () {
-      const ver = metaObj.version || 'v0.07';
+      const ver = metaObj.version || 'v0.08';
       const dateStr = 'Directory as of ' + (metaObj.directoryDate || '');
       document.getElementById('meta-date').textContent = dateStr;
       document.querySelectorAll('.version-text').forEach(el => el.textContent = ver);
