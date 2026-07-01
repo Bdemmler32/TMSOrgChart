@@ -22,13 +22,13 @@
     <div class="page-header-row">
       <div class="page-header-left">
         <img src="assets/tms-logo.png" alt="TMS" class="tms-logo-img" />
-        <h1 class="page-title">Staff Organization Chart <span class="version-badge version-text">v0.12</span></h1>
+        <h1 class="page-title">Staff Organization Chart <span class="version-badge version-text">v0.13</span></h1>
       </div>
       <div class="page-header-right">
         <span class="page-meta" id="meta-date"></span>
         <button class="btn-export" id="btn-export-pdf">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export PDF
+          <svg id="export-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span id="export-label">Export PDF</span>
         </button>
       </div>
     </div>
@@ -87,6 +87,9 @@
     <div id="lightbox-name" class="lightbox-name"></div>
   </div>
 
+  <!-- PDF generation: html2canvas captures the frame, jsPDF writes the file -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="main.js"></script>
 </body>
 </html>

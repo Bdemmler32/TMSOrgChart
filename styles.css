@@ -357,21 +357,41 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
   border-bottom: 2px solid #dce3ec; margin-bottom: 2px;
 }
 
-/* ── Print frame — off-screen in browser, visible only during print ── */
+/* ── Print frame — fully off-canvas in browser ── */
 #print-frame {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  width: 1400px;       /* wide enough to render full layout */
-  visibility: hidden;  /* not visible, but fully rendered and paint-ready */
+  position: fixed;     /* fixed so it never affects document flow or scroll */
+  left: -19999px;      /* far off-screen horizontally */
+  top: -19999px;       /* far off-screen vertically — eliminates gray box/line */
+  width: 1400px;
+  visibility: hidden;
   pointer-events: none;
   background: #fff;
+  /* Force desktop layout regardless of viewport width — escape all breakpoints */
+  container-type: normal;
+}
+
+/* Override all mobile breakpoints inside print-frame */
+#print-frame .dept-grid { grid-template-columns: repeat(5, 1fr) !important; }
+#print-frame .exec-block .dept-members {
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+}
+#print-frame .exec-block .dept-members .staff-card {
+  flex: 0 1 280px !important;
+  max-width: 280px !important;
+  width: auto !important;
+}
+#print-frame .dept-block.dept-exec .dept-head-wrap {
+  max-width: 340px !important;
+  margin: 0 auto !important;
 }
 
 /* Disabled export button state */
 .btn-export:disabled, .btn-export.disabled {
-  background: #9aacbe; cursor: not-allowed; opacity: .65;
+  background: #9aacbe; cursor: not-allowed; opacity: .85;
 }
+.btn-export:disabled { cursor: wait; }
 
 /* ── Modal ───────────────────────────────────────────── */
 .modal-overlay {
@@ -514,74 +534,7 @@ body { font-family: var(--font-body); background: var(--bg); color: var(--tms-na
   .directory-grid { grid-template-columns: 1fr; }
 }
 
-/* ── Print ───────────────────────────────────────────── */
-@media print {
-  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-
-  /* Hide the live UI — only the pre-rendered print frame prints */
-  body > *:not(#print-frame) { display: none !important; }
-
-  /* Bring print-frame into normal flow for printing */
-  #print-frame {
-    position: static !important;
-    left: auto !important;
-    visibility: visible !important;
-    width: 100% !important;
-    background: #fff;
-    font-size: 7.5px;
-    padding: 0;
-    margin: 0;
-  }
-
-  /* No border/stroke on header */
-  #print-frame .page-header-row {
-    padding: 4px 0 6px;
-    border: none;
-    margin: 0;
-  }
-  #print-frame .page-title { font-size: .9rem; }
-  #print-frame .tms-logo-img { height: 20px; }
-  #print-frame .version-badge { display: none; }
-  #print-frame .page-header-right .btn-export { display: none; }
-
-  /* Executive block — preserve centering */
-  #print-frame .exec-row { margin-bottom: 6px; }
-  #print-frame .exec-block .dept-members {
-    gap: 4px;
-    justify-content: center; /* keep centered like on screen */
-  }
-  #print-frame .exec-block .dept-members .staff-card {
-    flex: 0 1 auto; /* don't force stretch — let centering work */
-    min-width: 120px;
-  }
-  #print-frame .dept-block.dept-exec .dept-head-wrap {
-    max-width: 280px;
-    margin: 0 auto; /* keep Trudi centered */
-  }
-
-  /* Dept grid */
-  #print-frame .dept-grid { grid-template-columns: repeat(5, 1fr); gap: 5px; }
-  #print-frame .dept-block { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
-  #print-frame .dept-header { min-height: 0; gap: 4px; padding: 6px 8px 8px; }
-  #print-frame .dept-head-wrap { min-height: 0; max-width: none; margin: 0; }
-
-  /* Cards */
-  #print-frame .staff-card { padding: 3px 4px; gap: 4px; }
-  #print-frame .staff-photo,
-  #print-frame .staff-photo-placeholder { width: 26px !important; height: 26px !important; font-size: .6rem !important; }
-  #print-frame .staff-card.ceo-head-card .staff-photo,
-  #print-frame .staff-card.ceo-head-card .staff-photo-placeholder { width: 34px !important; height: 34px !important; }
-  #print-frame .staff-name { font-size: .62rem; }
-  #print-frame .staff-title { font-size: .54rem; }
-  #print-frame .staff-contact { display: none; }
-  #print-frame .dept-name { font-size: .63rem; margin-bottom: 2px; }
-  #print-frame .reports-indent { padding-left: 5px; margin-left: 7px; }
-
-  /* No shadows/modals */
-  #print-frame .dept-block { box-shadow: none; }
-  .modal-overlay, .lightbox { display: none !important; }
-
-  @page { size: 11in 8.5in landscape; margin: .25in; }
-}
+/* ── Print — handled by html2canvas + jsPDF (no @media print needed) ── */
+/* Browser print is disabled; Export PDF button generates the file directly. */
 
 .hidden { display: none !important; }

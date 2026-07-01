@@ -1,4 +1,4 @@
-# TMS Staff Organization Chart — v0.12
+# TMS Staff Organization Chart — v0.13
 **Interactive org chart with headshots, sub-reporting lines, search, directory, and instant PDF export.**
 
 ---
@@ -118,4 +118,4 @@ The PDF layout is pre-rendered in the background when the page loads, so the pri
 
 ---
 
-*TMS — The Minerals, Metals & Materials Society | tms.org | v0.12*
+*TMS — The Minerals, Metals & Materials Society | tms.org | v0.13*

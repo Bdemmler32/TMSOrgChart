@@ -517,10 +517,92 @@
     }
   }
 
-  /* ── PDF export — truly instant, frame already built ──── */
+  /* ── PDF export — html2canvas + jsPDF, direct file download ── */
   function exportPDF() {
     if (currentView === 'directory') return;
-    window.print(); // frame is pre-built; no work needed here
+
+    const btn   = document.getElementById('btn-export-pdf');
+    const label = document.getElementById('export-label');
+    const icon  = document.getElementById('export-icon');
+
+    // Show loading state
+    btn.disabled = true;
+    label.textContent = 'Generating…';
+    icon.style.opacity = '.4';
+
+    const frame = document.getElementById('print-frame');
+
+    // Temporarily make frame visible and in-flow for capture
+    frame.style.position   = 'relative';
+    frame.style.left       = '0';
+    frame.style.top        = '0';
+    frame.style.visibility = 'visible';
+    frame.style.width      = '1400px';
+
+    // Page dimensions: 11×8.5 in at 96dpi = 1056×816px
+    const PW = 1056;
+    const PH = 816;
+    const scale = PW / 1400; // scale frame width to page width
+
+    html2canvas(frame, {
+      scale: 2,            // 2x for crisp output
+      useCORS: true,       // allow cross-origin images (headshots)
+      allowTaint: false,
+      backgroundColor: '#ffffff',
+      width: 1400,
+      windowWidth: 1400,
+      logging: false,
+    }).then(canvas => {
+      // Restore off-screen
+      frame.style.position   = 'fixed';
+      frame.style.left       = '-19999px';
+      frame.style.top        = '-19999px';
+      frame.style.visibility = 'hidden';
+      frame.style.width      = '';
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'in',
+        format: 'letter',
+      });
+
+      // Page is 11×8.5". Margins .25" each side → usable 10.5×8"
+      const margin  = 0.25;
+      const useW    = 11 - margin * 2;   // 10.5"
+      const useH    = 8.5 - margin * 2;  // 8"
+
+      // Scale canvas to fit within usable area (maintain aspect ratio)
+      const canvasW = canvas.width / 2;   // canvas is 2x scaled
+      const canvasH = canvas.height / 2;
+      const ratio   = Math.min(useW / canvasW * 96, useH / canvasH * 96) / 96;
+      const imgW    = canvasW * ratio;
+      const imgH    = canvasH * ratio;
+
+      // Center on page
+      const x = margin + (useW - imgW) / 2;
+      const y = margin + (useH - imgH) / 2;
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      pdf.addImage(imgData, 'JPEG', x, y, imgW, imgH);
+      pdf.save('TMS-Staff-Organization-Chart.pdf');
+
+      // Restore button
+      btn.disabled = false;
+      label.textContent = 'Export PDF';
+      icon.style.opacity = '';
+    }).catch(err => {
+      console.error('PDF export failed:', err);
+      frame.style.position   = 'fixed';
+      frame.style.left       = '-19999px';
+      frame.style.top        = '-19999px';
+      frame.style.visibility = 'hidden';
+      frame.style.width      = '';
+      btn.disabled = false;
+      label.textContent = 'Export PDF';
+      icon.style.opacity = '';
+      alert('PDF export failed. Please try again.');
+    });
   }
 
   /* ── Keep export button state in sync with view ─────────── */
@@ -557,7 +639,7 @@
   /* ── Init ─────────────────────────────────────────────── */
   function init() {
     loadExcel('staff-data.xlsx', function () {
-      const ver = metaObj.version || 'v0.12';
+      const ver = metaObj.version || 'v0.13';
       const dateStr = 'Directory as of ' + (metaObj.directoryDate || '');
       document.getElementById('meta-date').textContent = dateStr;
       document.querySelectorAll('.version-text').forEach(el => el.textContent = ver);
