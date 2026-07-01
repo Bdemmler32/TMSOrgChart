@@ -71,6 +71,11 @@
     return name.split(' ').map(w => w[0]).filter(Boolean).join('').slice(0, 2).toUpperCase();
   }
 
+  function lastName(name) {
+    const parts = String(name || '').trim().split(/\s+/);
+    return parts.length > 1 ? parts[parts.length - 1] : parts[0];
+  }
+
   function matchSearch(p) {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
@@ -119,8 +124,7 @@
     info.className = 'staff-info';
     info.innerHTML =
       '<div class="staff-name">' + esc(person.name) + '</div>' +
-      '<div class="staff-title">' + esc(person.title) + '</div>' +
-      '<div class="staff-contact">Ext. ' + esc(person.ext) + ' · ' + esc(person.direct) + '</div>';
+      '<div class="staff-title">' + esc(person.title) + '</div>';
     btn.appendChild(info);
 
     btn.addEventListener('pointerdown', function(e) {
@@ -325,7 +329,7 @@
     let sorted = [...allPeople].filter(p => matchSearch(p));
 
     if (dirSort === 'alpha') {
-      sorted.sort((a, b) => a.name.localeCompare(b.name));
+      sorted.sort((a, b) => lastName(a.name).localeCompare(lastName(b.name)));
       const grid = document.createElement('div');
       grid.className = 'directory-grid';
       sorted.forEach(p => grid.appendChild(makeDirCard(p)));
@@ -497,7 +501,7 @@
     hdrRow.className = 'page-header-row';
     hdrRow.innerHTML =
       '<div class="page-header-left">' +
-        '<span class="tms-wordmark">TMS</span>' +
+        '<img src="assets/tms-logo.png" alt="TMS" class="tms-logo-img" />' +
         '<h1 class="page-title">Staff Organization Chart</h1>' +
       '</div>' +
       '<span class="page-meta">' + esc(document.getElementById('meta-date').textContent) + '</span>';
@@ -554,7 +558,7 @@
   /* ── Init ─────────────────────────────────────────────── */
   function init() {
     loadExcel('staff-data.xlsx', function () {
-      const ver = metaObj.version || 'v0.10';
+      const ver = metaObj.version || 'v0.11';
       const dateStr = 'Directory as of ' + (metaObj.directoryDate || '');
       document.getElementById('meta-date').textContent = dateStr;
       document.querySelectorAll('.version-text').forEach(el => el.textContent = ver);

@@ -10,21 +10,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
-  <!-- SheetJS for reading Excel data file -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <!-- ── Page body (no sticky bar) ───────────────────────── -->
+  <!-- ── Main content ─────────────────────────────────────── -->
   <main class="main-content">
 
-    <!-- Page header row (inside body, not sticky) -->
+    <!-- Page header -->
     <div class="page-header-row">
       <div class="page-header-left">
-        <span class="tms-wordmark">TMS</span>
-        <h1 class="page-title">Staff Organization Chart <span class="version-badge version-text">v0.09</span></h1>
+        <img src="assets/tms-logo.png" alt="TMS" class="tms-logo-img" />
+        <h1 class="page-title">Staff Organization Chart <span class="version-badge version-text">v0.11</span></h1>
       </div>
       <div class="page-header-right">
         <span class="page-meta" id="meta-date"></span>
@@ -35,7 +33,7 @@
       </div>
     </div>
 
-    <!-- Search + view toggles row (sticky) -->
+    <!-- Sticky controls -->
     <div class="controls-sticky">
       <div class="controls-inner">
         <div class="search-wrap">
@@ -73,17 +71,17 @@
       <div id="directory-grid-wrap"></div>
     </section>
 
-    <!-- Hidden print frame — always rendered, instant PDF -->
-    <div id="print-frame" aria-hidden="true"></div>
-
   </main>
 
-  <!-- ── Modal ──────────────────────────────────────────── -->
+  <!-- ── Print frame — DIRECT child of body so print CSS can target it ── -->
+  <div id="print-frame" aria-hidden="true"></div>
+
+  <!-- ── Modal ─────────────────────────────────────────────── -->
   <div id="modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Staff profile">
     <div id="modal" class="modal"></div>
   </div>
 
-  <!-- ── Lightbox ───────────────────────────────────────── -->
+  <!-- ── Lightbox ──────────────────────────────────────────── -->
   <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Photo enlarged">
     <img id="lightbox-img" src="" alt="" />
     <div id="lightbox-name" class="lightbox-name"></div>
